@@ -67,6 +67,9 @@ class book_chapter_edit_form extends moodleform {
         $mform->addElement('hidden', 'pagenum');
         $mform->setType('pagenum', PARAM_INT);
 
+        /* CUSTOM */
+        $mform->addElement('button', 'verify', 'verify');
+
         $this->add_action_buttons(true);
 
         // set the defaults
