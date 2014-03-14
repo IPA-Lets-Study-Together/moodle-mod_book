@@ -82,3 +82,7 @@ $string['page-mod-book-x'] = 'Any book module page';
 $string['subchapternotice'] = '(Only available once the first chapter has been created)';
 $string['subplugintype_booktool'] = 'Book tool';
 $string['subplugintype_booktool_plural'] = 'Book tools';
+
+/* CUSTOM SUBPLUGIN */
+$string['subplugintype_bookverification'] = 'Book verification';
+$string['subplugintype_bookverification_plural'] = 'Book verifications';
