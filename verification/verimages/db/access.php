@@ -15,13 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Book module language strings
+ * Book module capability definition
  *
- * @package    bookverification
+ * @package    bookverification_verimages
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$string['pluginname'] = 'Verifikacija';
+$capabilities = array(
+	'bookverification/verimages:verify_image' => array(
+		'captype' => 'read',
+		'contextlevel' => CONTEXT_MODULE,
+		'archetypes' => array(
+			'teacher' => CAP_ALLOW,
+			'editingteacher' => CAP_ALLOW,
+			'manager' => CAP_ALLOW,
+		)
+	),
+);

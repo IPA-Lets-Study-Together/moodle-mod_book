@@ -17,11 +17,11 @@
 /**
  * Book module language strings
  *
- * @package    bookverification
+ * @package    bookverification_vertables
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$string['pluginname'] = 'Verifikacija';
+$string['pluginname'] = 'Table verification';
