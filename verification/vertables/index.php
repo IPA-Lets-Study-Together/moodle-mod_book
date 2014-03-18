@@ -17,7 +17,7 @@
 /**
  * Book verification
  *
- * @package    bookverification
+ * @package    bookverification_vertables
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,7 +40,7 @@ require_course_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 require_capability('mod/book:read', $context);
-require_capability('bookverification:verify', $context);
+require_capability('bookverification/vertables:verify_table', $context);
 
 //Check all variables
 if ($chapterid) {
