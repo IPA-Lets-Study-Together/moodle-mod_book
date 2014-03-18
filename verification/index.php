@@ -38,6 +38,25 @@ $book = $DB->get_record('book', array('id'=>$cm->instance), '*', MUST_EXIST);
 
 require_course_login($course, true, $cm);
 
+$context = context_module::instance($cm->id);
+require_capability('mod/book:read', $context);
+require_capability('bookverification:verify', $context);
+
+//Check all variables
+if ($chapterid) {
+	$chapter = $DB->get_record('book_chapters', array('id'=>$chapterid, 'bookid'=>$book->id), '*', MUST_EXIST);
+} else {
+	$chapter = false;
+}
+
+$PAGE->set_url('/mod/book/verify.php', array('id'=>$id, 'chapterid'=>$chapterid));
+
+unset($id);
+unset($chapterid);
+
+// Security checks END
+
+// read chapters
 
 
 
