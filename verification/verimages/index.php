@@ -57,6 +57,7 @@ unset($chapterid);
 // Security checks END
 
 // read chapters
+$chapters = book_preload_chapters($book);
 
 
 
