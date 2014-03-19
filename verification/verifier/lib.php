@@ -31,11 +31,22 @@ defined('MOODLE_INTERNAL') || die;
  * @param navigation_node $node The node to add module settings to
  */
  function bookverification_verifier_extend_settings_navigation(settings_navigation $settings, navigation_node $node) {
- 	global $PAGE;
+ 	global $USER, $PAGE, $CFG, $DB, $OUTPUT;
+
+ 	$params = $PAGE->url->params();
+ 	if (empty($params['id']) or empty($params['chapterid'])) {
+ 		return;
+ 	}
 
  	if (has_capability('bookverification/verifier:verify', $PAGE->cm->context)) {
- 		$url = new moodle_url('/mod/book/verification/verifier/index.php', array('id'=>$PAGE->cm->id));
- 		$node = add(get_string('verify', 'bookverification_verifier'), $url, navigation_node::TYPE_SETTING, null, null, null);
+ 		$url1 = new moodle_url('/mod/book/verification/verifier/index.php', array('id'=>$params['id']));
+ 		$url2 = new moodle_url('/mod/book/verification/verifier/index.php', array('id'=>$params['id'], 'chapterid'=>$params['chapterid']));
+ 		$action = new action_link($url1, get_string('verifybook', 'bookverification_verifier'), new popup_action('click', $url1));
+ 		$node->add(get_string('verifybook', 'bookverification_verifier'), $action, navigation_node::TYPE_SETTING, null, null, 
+ 			new pix_icon('verifier', '', 'bookverification_verifier', array('class'=>'icon')));
+ 		$action = new action_link($url2, get_string('verifychapter', 'bookverification_verifier'), new popup_action('click', $url2));
+ 		$node = add(get_string('verifychapter', 'bookverification_verifier'), $action, navigation_node::TYPE_SETTING, null, null, 
+ 			new pix_icon('verifier', '', 'bookverification_verifier', array('class'=>'icon')));
  	}
  }
 
