@@ -24,4 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+$string['event_images_verified'] = 'Your book is verified';
+$string['verimages:verify_images'] = 'Verify that all images are suitable for VIP users';
+$string['verifyimages'] = 'Verify images';
 $string['pluginname'] = 'Image verification';
