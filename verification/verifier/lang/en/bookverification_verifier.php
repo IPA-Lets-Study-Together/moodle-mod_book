@@ -1,4 +1,4 @@
-	<?php
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,28 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Book module capability definition
+ * Verifier bookverification language strings
  *
- * @package    bookverification_verimages
+ * @package    bookverification_verifier
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-/**
- * Adds module specific settings to the settings block
- *
- * @param settings_navigation $settings The settings navigation object
- * @param navigation_node $node The node to add module settings to
- */
-function bookverification_verimages_extend_settings_navigation(settings_navigation $settings, navigation_node $node) {
-	global $PAGE;
-
-	if (has_capability('bookverification/verimages:verify_image', $PAGE->cm->context)) {
-		$url = new moodle_url('mod/book/verification/verimages/index.php', array('id'=>$PAGE->cm->id));
-		$icon = new pix_icon('generate', '', 'bookverification_verimages', array('class'=>'icon'));
-		$node->add(get_string('verifyimages', 'bookverification_verimages'), $url, navigation_node::TYPE_SETTING, null, null, $icon);
-		
-	}
-}
+$string['verify'] = 'Verify this content';
+$string['pluginname'] = 'Book content verification';

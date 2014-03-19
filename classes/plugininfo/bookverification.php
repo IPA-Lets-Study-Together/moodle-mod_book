@@ -15,23 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Book module capability definition
+ * Subplugin info class
  *
- * @package    bookverification_verimages
+ * @package    bookverification_verifier
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace mod_book\plugininfo;
 
-defined('MOODLE_INTERNAL') || die;
+use core\plugininfo\base;
 
-$capabilities = array(
-	'bookverification/verimages:verify_image' => array(
-		'captype' => 'write', //write umijesto read
-		'contextlevel' => CONTEXT_MODULE,
-		'archetypes' => array(
-			'teacher' => CAP_ALLOW,
-			'editingteacher' => CAP_ALLOW,
-			'manager' => CAP_ALLOW,
-		)
-	),
-);
+defined('MOODLE_INTERNAL') || die();
+
+
+class bookverification extends base {
+    public function is_uninstall_allowed() {
+        return true;
+    }
+}
