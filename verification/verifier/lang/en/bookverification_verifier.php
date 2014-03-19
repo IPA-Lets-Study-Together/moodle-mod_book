@@ -24,5 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$string['verify'] = 'Verify this content';
+$string['event_chapter_verified'] = 'There are no verification issues in this chapter';
+$string['event_chapter_notverified'] = 'This chapter has verification issues';
+$string['event_book_verified'] = 'There are no verification issues in this book';
+$string['event_book_notverified'] = 'This book has verification issues';
+$string['verifychapter'] = 'Verify this chapter';
+$string['verifybook'] = 'Verify book';
 $string['pluginname'] = 'Book content verification';
+$string['verifier:verified'] = 'verify';
