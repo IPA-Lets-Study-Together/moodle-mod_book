@@ -24,4 +24,5 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+$string['verifytables'] = 'Verify tables';
 $string['pluginname'] = 'Table verification';
