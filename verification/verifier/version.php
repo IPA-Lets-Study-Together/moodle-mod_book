@@ -25,5 +25,5 @@
 defined('MOODLE_INTERNAL') || die;
 
 $plugin->component = 'bookverification_verifier'; // Full name of the plugin (used for diagnostics)
-$plugin->version   = 2014031900; // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2014031901; // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2013110500; // Requires this Moodle version
