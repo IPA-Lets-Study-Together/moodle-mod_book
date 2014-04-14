@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <XMLDB PATH="mod/book/tool/validator/db" VERSION="20140414" COMMENT="XMLDB file for Moodle mod/book/tool/validator">
+    <TABLES>
+      <TABLE NAME="booktool_validator" COMMENT="Table for booktool_validator sub-plugin for Book module">
+        <FIELDS>
+          <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+          <FIELD NAME="bookid" TYPE="int" LENGTH="10" NOTNULL="true" />
+          <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" />
+          <FIELD NAME="validated" TYPE="tinyint" LENGTH="1" NOTNULL="false" DEFAULT="0" />
+          <FIELD NAME="faults" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" />
+        </FIELDS>
+        <KEYS>
+          <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+        </KEYS>
+      </TABLE>
+    </TABLES>
+  </XMLDB>
