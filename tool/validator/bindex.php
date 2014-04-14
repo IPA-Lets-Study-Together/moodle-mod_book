@@ -25,6 +25,7 @@
 require(dirname(__FILE__).'/../../../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/validation_form.php');
+require_once(dirname(__FILE__).'/chapter_validation_form.php');
 
 $id        = required_param('id', PARAM_INT);           // Course Module ID
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID
@@ -43,7 +44,7 @@ $PAGE->set_url('/mod/book/tool/validator/bindex.html', array('id'=>$id, 'chapter
 
 //check if data exists in the sub-plugin table, create new data if doesn't exist
 
-if ( !($DB->record_exists('{booktool_validator}', array('bookid'=>$book->id))) ) {
+if ( !($DB->record_exists('booktool_validator', array('bookid'=>$book->id))) ) {
     
     $chapterids = $DB->get_records_sql('SELECT id FROM {book_chapters} WHERE bookid = ?', array($book->id));
 
@@ -68,13 +69,13 @@ if ( !($DB->record_exists('{booktool_validator}', array('bookid'=>$book->id))) )
     }
 
 } else {
-    $chapterids = $DB->get_records_sql('SELECT id FROM {book_chapters} WHERE bookid = ?', $book->id);
+    $chapterids = $DB->get_records_sql('SELECT id FROM {book_chapters} WHERE bookid = ?', array($book->id));
 
     foreach ($chapterids as $chapter) {
 
         $record = new stdClass();
 
-        if ( !($DB->record_exists('booktool_validator', array('chapterid'=>$chapter, 'bookid'=>$book->id))) ) {
+        if ( !($DB->record_exists('booktool_validator', array('bookid'=>$book->id, 'chapterid'=>$chapter->id))) ) {
 
             $record->bookid = $book->id;
             $record->chapterid = $chapter;
