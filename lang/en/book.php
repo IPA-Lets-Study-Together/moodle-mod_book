@@ -84,5 +84,5 @@ $string['subplugintype_booktool'] = 'Book tool';
 $string['subplugintype_booktool_plural'] = 'Book tools';
 
 /* CUSTOM SUBPLUGIN */
-$string['subplugintype_bookverification'] = 'Book verification';
-$string['subplugintype_bookverification_plural'] = 'Book verifications';
+$string['subplugintype_bookvalidation'] = 'Book validation';
+$string['subplugintype_bookvalidation_plural'] = 'Book validations';
