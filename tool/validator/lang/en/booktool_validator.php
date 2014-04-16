@@ -38,3 +38,5 @@ $string['chapter'] = 'Chapter';
 $string['table'] ='tables';
 $string['image'] = 'images';
 $string['notvalidated'] = 'are not validated.';
+
+$string['validate'] = 'Validate';

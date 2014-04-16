@@ -118,7 +118,7 @@ if ($mform->is_cancelled()) {
     }
 }
 
-$bookvalidated = book_checkvalidation($book->id);
+$bookvalidated = book_checkvalidation($book);
 if ($bookvalidated) {
     echo(get_string('event_book_validated', 'booktool_validator'));
 } else {
@@ -133,6 +133,9 @@ $PAGE->set_heading($course->fullname);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($book->name);
+
+$PAGE->set_button(get_string('event_book_validated', 'booktool_validator'));
+echo $OUTPUT;
 
 $mform->display();
 

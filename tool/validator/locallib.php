@@ -83,21 +83,16 @@ function book_checkvalidation($book) {
  	
  	global $DB;
 
- 	try {
+	//connect to database and get all chapters for this book
+	$query = 'SELECT bc.content FROM
+		{book_chapters} bc 
+		JOIN {book} b ON bc.bookid = b.id
+		WHERE bc.bookid = ?';
+	$query_result = $DB->get_records_sql($query, array($book->id));
 
- 		//connect to database and get all chapters for this book
- 		$query = 'SELECT bc.content FROM 
- 			mdl_book b 
- 			JOIN book_chapters bc ON b.id = bc.bookid
- 			WHERE bc.bookid = ?';
- 		$query_result = $DB->get_records_sql($query, $book->id);
- 	} catch (Exception $e) {
-		return false;
-	}
+	//set regular expressions for search and run the search
 
-		//set regular expressions for search and run the search
-
-		$image_pattern = '/<img(.*)\/>/'; //regular expression for image tag search
+	$image_pattern = '/<img(.*)\/>/'; //regular expression for image tag search
 	
 	$image_pregmatch = get_pregmatch($query_result, $image_pattern);
 	$image_pregmatch_cnt = count_indices($image_pregmatch);
@@ -132,17 +127,12 @@ function chapter_checkvalidation($book, $chapterid) {
 
  	global $DB;
 
- 	try {
-
- 		//connect to database and get all chapters for this book
- 		$query = 'SELECT bc.content FROM 
- 			mdl_book b 
- 			JOIN book_chapters bc ON b.id = bc.bookid
- 			WHERE bc.bookid = ? AND bc.id = ?';
- 		$query_result = $DB->get_records_sql($query, $book->id, $chapterid);
- 	} catch (Exception $e) {
-		return false;
-	}
+ 	$query = 'SELECT bc.content FROM 
+ 		{book_chapters} bc
+ 		JOIN {book} b ON bc.bookid = b.id
+ 		WHERE bc.bookid = ? AND bc.id = ?';
+ 	$params = array($book->id, $chapterid);
+ 	$query_result = $DB->get_records_sql($query, $params);
 
 	//set regular expressions for search and run the search
 
@@ -180,12 +170,14 @@ function chapter_getname($book, $chapterid) {
 
 	global $DB;
 
-	$chapter = $DB->get_recordss('book_chapters', array('id'=>$chapterid, 'bookid'=>$book->id), '*', MUST_EXIST);
+	$query = 'SELECT title FROM {book_chapters} WHERE id = ? AND bookid = ?';
+	$params = array($chapterid, $book->id);
+	$query_result = $DB->get_record_sql($query, $params);
 	
-	if (!$chapter = $DB->get_records('book_chapters', array('id'=>$chapterid, 'bookid'=>$book->id), '*', MUST_EXIST)) {
+	if (!$query_result) {
 		return false;
 	}
-	return $chapter;
+	return $query_result->title;
 }
 
 function number_od_faults($book, $chapterid) {

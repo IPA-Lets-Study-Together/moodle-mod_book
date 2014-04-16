@@ -53,7 +53,17 @@ require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/mod/book/edit_form.php');
 
 class book_validation_edit_form extends book_chapter_edit_form {
+
     function definition() {
+		
         parent::definition();
+    }
+
+    function definition_after_data(){
+        $mform = $this->_form;
+        $pagenum = $mform->getElement('pagenum');
+        if ($pagenum->getValue() == 1) {
+            $mform->hardFreeze('subchapter');
+        }
     }
 }

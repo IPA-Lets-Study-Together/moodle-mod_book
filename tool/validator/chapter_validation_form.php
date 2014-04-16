@@ -37,13 +37,12 @@ class chapter_validation_form extends moodleform {
 
 		$mform = $this->_form;
 
-		$mform->addElement('text', 'title', get_string('chaptertitle', 'mod_book'), array('size'=>'30'));
-        $mform->setType('title', PARAM_RAW);
-        $mform->addRule('title', null, 'required', null, 'client');
-		
+		$chapter_name = chapter_getname($book, $chapter->id);
+
+		$mform->addElement('static', 'event_chapter_notvalidated', $chapter_name, get_string('event_chapter_notvalidated', 'booktool_validator'));
 
 		$buttonarray=array();
-		$buttonarray[] =& $mform->createElement('submit', 'validate', get_string('validatex'));
+		$buttonarray[] =& $mform->createElement('submit', 'validate', get_string('validate', 'booktool_validator'));
 		$buttonarray[] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
 		
 		$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
