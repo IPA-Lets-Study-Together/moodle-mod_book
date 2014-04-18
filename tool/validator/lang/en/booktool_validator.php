@@ -29,12 +29,13 @@ $string['event_chapter_notvalidated'] = 'This chapter has validation issues';
 $string['event_book_validated'] = 'There are no validation issues in this book';
 $string['event_book_notvalidated'] = 'This book has validation issues';
 $string['validatechapter'] = 'Validate this chapter';
-$string['validatebook'] = 'Validate book';
+$string['validatebook'] = 'Check book for validation problems';
 $string['pluginname'] = 'Book content validation';
 $string['validator:validated'] = 'validate';
 
 $string['buttonvalidate'] = 'Validate';
 $string['chapter'] = 'Chapter';
+$string['val_chapter'] = 'Validate chapter';
 $string['table'] ='tables';
 $string['image'] = 'images';
 $string['notvalidated'] = 'are not validated.';
