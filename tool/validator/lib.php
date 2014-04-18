@@ -38,18 +38,24 @@ defined('MOODLE_INTERNAL') || die;
  		return;
  	}
 
- 		/*$query = 'SELECT btv.verified FROM
- 					mdl_booktool_validator btv
- 					JOIN mdl_book_chapters bc ON btv.chapterid = bc.id
- 					JOIN mdl_book b ON bc.bookid = b.id
- 					WHERE b.id = ?';
+ 	$query = 'SELECT btv.validated 
+ 		FROM {booktool_validator} btv
+ 		JOIN {book_chapters} bc ON btv.chapterid = bc.id
+ 		JOIN {book} b ON bc.bookid = b.id
+ 		WHERE b.id = ? AND bc.id';
 
- 		$query_result = $DB->get_record($query, $params['id']);*/
-
-	$query_result = 1;
+ 	$query_result = $DB->get_record($query, array($params['id'], $params['chapterid']));
 
 	if (has_capability('booktool/validator:validate', $PAGE->cm->context)) {
- 		if ($query_result == 1) {
+ 		if ($query_result->validated == 1) {
+
+ 			$node->add(get_string('validatebook', 'booktool_validator'), null, navigation_node::TYPE_SETTING, null, null, 
+	 			new pix_icon('validator_gray', '', 'booktool_validator', array('class'=>'icon')));
+	 		$node->add(get_string('validatechapter', 'booktool_validator'), null, navigation_node::TYPE_SETTING, null, null, 
+	 			new pix_icon('validator_gray', '', 'booktool_validator', array('class'=>'icon')));
+
+ 		} else {
+
  			$url1 = new moodle_url('/mod/book/tool/validator/bindex.php', array('id'=>$params['id']));
 	 		$url2 = new moodle_url('/mod/book/tool/validator/bcindex.php', array('id'=>$params['id'], 'chapterid'=>$params['chapterid']));
 	 		//$action = new action_link($url1, get_string('verifybook', 'booktool_validator'), new popup_action('click', $url1));
@@ -58,12 +64,7 @@ defined('MOODLE_INTERNAL') || die;
 	 		//$action = new action_link($url2, get_string('verifychapter', 'booktool_validator'), new popup_action('click', $url2));
 	 		$node->add(get_string('validatechapter', 'booktool_validator'), $url2, navigation_node::TYPE_SETTING, null, null, 
 	 			new pix_icon('validator', '', 'booktool_validator', array('class'=>'icon')));
- 		} elseif ($query_result == 0) {
-	 		$node->add(get_string('validatebook', 'booktool_validator'), null, navigation_node::TYPE_SETTING, null, null, 
-	 			new pix_icon('validator_gray', '', 'booktool_validator', array('class'=>'icon')));
-	 		$node->add(get_string('validatechapter', 'booktool_validator'), null, navigation_node::TYPE_SETTING, null, null, 
-	 			new pix_icon('validator_gray', '', 'booktool_validator', array('class'=>'icon')));	
- 	}
-}
+ 		}
+	}
  		
 }
