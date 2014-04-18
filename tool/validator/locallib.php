@@ -151,10 +151,10 @@ function chapter_checkvalidation($book, $chapterid) {
 	$table_pregmatch_search = term_search($table_pregmatch, 'summary="');
 	$cnt_summary = count_indices($table_pregmatch_search);
 
-	if (($image_pregmatch_cnt > $cnt_alt) && ($table_pregmatch_cnt > $cnt_summary)) {
-		return false;
-	} elseif (($image_pregmatch_cnt == $cnt_alt) && ($table_pregmatch_cnt == $cnt_summary)) {
+	if (($image_pregmatch_cnt == $cnt_alt) && ($table_pregmatch_cnt == $cnt_summary)) {
 		return true;
+	} else {
+		return false;
 	}
 }
 /**
