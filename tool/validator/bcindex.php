@@ -134,10 +134,6 @@ if (($DB->get_field('booktool_validator', 'validated', array('bookid'=>$book->id
     }
 }
 
-
-
-
-
 // Otherwise fill and print the form.
 $PAGE->set_title($book->name);
 $PAGE->set_heading($course->fullname);
