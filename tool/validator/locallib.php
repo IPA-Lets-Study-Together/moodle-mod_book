@@ -144,7 +144,7 @@ function chapter_checkvalidation($book, $chapterid) {
 	$cnt_alt = count_indices($image_pregmatch_search);
 
 	
-	$table_pattern = '/<table(.*)\>/'; //regular expression for table tag search
+	$table_pattern = '/<table(.*)\/>/'; //regular expression for table tag search
 
 	$table_pregmatch = get_pregmatch($query_result, $table_pattern);
 	$table_pregmatch_cnt = count_indices($table_pregmatch);
