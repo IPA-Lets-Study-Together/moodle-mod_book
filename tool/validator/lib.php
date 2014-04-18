@@ -38,16 +38,18 @@ defined('MOODLE_INTERNAL') || die;
  		return;
  	}
 
- 	$query = 'SELECT btv.validated 
+ /*	$query = 'SELECT btv.validated 
  		FROM {booktool_validator} btv
  		JOIN {book_chapters} bc ON btv.chapterid = bc.id
  		JOIN {book} b ON bc.bookid = b.id
  		WHERE b.id = ? AND bc.id';
 
- 	$query_result = $DB->get_record($query, array($params['id'], $params['chapterid']));
+ 	$query_result = $DB->get_record($query, array($params['id'], $params['chapterid']));*/
+
+ 	$validated = $DB->get_field('booktool_validator', 'validated', array('bookid'=>$params['id'], 'chapterid'=>$params['chapterid']), IGNORE_MISSING);
 
 	if (has_capability('booktool/validator:validate', $PAGE->cm->context)) {
- 		if ($query_result->validated == 1) {
+ 		if ($validated == 1) {
 
  			$node->add(get_string('validatebook', 'booktool_validator'), null, navigation_node::TYPE_SETTING, null, null, 
 	 			new pix_icon('validator_gray', '', 'booktool_validator', array('class'=>'icon')));
