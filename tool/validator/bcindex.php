@@ -39,16 +39,22 @@ $book = $DB->get_record('book', array('id'=>$cm->instance), '*', MUST_EXIST);
 require_course_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
-require_capability('mod/book:read', $context);
-require_capability('mod/book:edit', $context);
+/*require_capability('mod/book:read', $context);
+require_capability('mod/book:edit', $context);*/
 
-/*require_capability('booktool/validator:validate', $context);*/
+require_capability('booktool/validator:validate', $context);
+
 $PAGE->set_url('/mod/book/tool/validator/bcindex.html', array('id'=>$id, 'chapterid'=>$chapterid));
 $PAGE->set_pagelayout('admin'); // TODO: Something. This is a bloody hack!
 
 //check if data exists in the sub-plugin table, create new data if doesn't exist
 
-if ( !($DB->record_exists('booktool_validator', array('bookid'=>$book->id))) ) {
+if ( !($DB->record_exists('booktool_validator', array('bookid'=>$book->id, 'chapterid'=>$chapterid))) ) {
+
+    $record = new stdClass();
+
+    $record->bookid = $book->id;
+    $record->chapterid = $chapterid;
     
     $chapterids = $DB->get_records_sql('SELECT id FROM {book_chapters} WHERE bookid = ?', array($book->id));
 
