@@ -130,8 +130,8 @@ function chapter_checkvalidation($book, $chapterid) {
  	$query = 'SELECT bc.content FROM 
  		{book_chapters} bc
  		JOIN {book} b ON bc.bookid = b.id
- 		WHERE bc.bookid = ? AND bc.id = ?';
- 	$params = array($book->id, $chapterid);
+ 		WHERE bc.id = ? AND bc.bookid = ?';
+ 	$params = array($chapterid, $book->id);
  	$query_result = $DB->get_records_sql($query, $params);
 
 	//set regular expressions for search and run the search
