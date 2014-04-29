@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$string['event_chapter_validated'] = 'There are no validation issues in this chapter';
-$string['event_chapter_notvalidated'] = 'This chapter has validation issues';
-$string['event_book_validated'] = 'There are no validation issues in this book';
-$string['event_book_notvalidated'] = 'This book has validation issues';
+$string['event_chapter_validated'] = 'There are no validation problems in this chapter';
+$string['event_chapter_notvalidated'] = 'This chapter has validation problems. ';
+$string['event_book_validated'] = 'There are no validation problems in this book.';
+$string['event_book_notvalidated'] = 'This book has validation problems';
 $string['validatechapter'] = 'Validate this chapter';
 $string['validatebook'] = 'Check book for validation problems';
 $string['pluginname'] = 'Book content validation';
@@ -36,8 +36,9 @@ $string['validator:validated'] = 'validate';
 $string['buttonvalidate'] = 'Validate';
 $string['chapter'] = 'Chapter';
 $string['val_chapter'] = 'Validate chapter';
-$string['table'] ='tables';
-$string['image'] = 'images';
-$string['notvalidated'] = 'are not validated.';
+$string['table'] ='Missing summary in tables:';
+$string['image'] = 'Missing image description in images:';
+$string['nof'] = 'Number of faults: ';
 
 $string['validate'] = 'Validate';
+$string['click'] = 'Click to ';

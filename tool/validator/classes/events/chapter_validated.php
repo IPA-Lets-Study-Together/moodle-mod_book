@@ -15,33 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * booktool_verifier book verified event
+ * booktool_verifier chapter verified event
  *
  * @package    booktool_verifier
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace booktool_verifier\event;
-defined('MOODLE_INTERNAL') || die;
+namespace booktool_validator\event;
+defined('MOODLE_INTERNAL') || die();
 
 /**
- * booktool_verifier book verified event class
+ * booktool_verifier chapter verified event class
  *
  * @package    booktool_verifier
  * @copyright  2014 Ivana Skelic, Hrvoje Golcic 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class book_verified extends \core\event\base {
-
-    /**
+class chapter_verified extends \core\event\base {
+	/**
      * Returns description of what happened.
      *
      * @return string
      */
-    public function get_description() {
-    	return "The user $this->userid has verified the book $this->objectid.";
-    }
+	public function get_description() {
+		return "The user $this->userid has validated the chapter $this->objectid of the book module $this->context->instanceid."
+	}
 
     /**
      * Return the legacy event log data.
@@ -49,7 +48,7 @@ class book_verified extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-    	return array($this->courseid, 'book', 'verify book', 'tool/verifier/index.php?id=' . $this->context->instanceid, $this->objectid, $this->context->instanceid);
+    	return array($this->courseid, 'book', 'Validate chapter', 'tool/validator/bcindex.php?id=' . $this->context->instanceid . '&chapterid=' . $this->objectid, $this->objectid, $this->context->instanceid);
     }
 
     /**
@@ -58,7 +57,7 @@ class book_verified extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-    	return get_string('event_book_verified', 'booktool_verifier');
+    	return get_string('event_chapter_validated', 'booktool_validator');
     }
 
     /**
@@ -67,7 +66,7 @@ class book_verified extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-    	return new \moodle_url('mod/book/tool/verifier/index.php', array('id' => $this->context->instanceid));
+    	return new \moodle_url('/mod/book/tool/validator/bcindex.php', array('id' => $this->context->instanceid));
     }
 
     /**

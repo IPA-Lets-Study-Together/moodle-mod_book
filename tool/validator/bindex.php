@@ -25,9 +25,8 @@
 require(dirname(__FILE__).'/../../../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/validation_form.php');
-require_once(dirname(__FILE__).'/chapter_validation_form.php');
 
-$id = required_param('id', PARAM_INT);           // Course Module ID
+$id = required_param('id', PARAM_INT);  // Course Module ID
 
 $cm = get_coursemodule_from_id('book', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
@@ -52,28 +51,49 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($book->name);
 
-if ( !($DB->record_exists('booktool_validator', array('bookid'=>$book->id))) ) {
-    
-    $chapterids = $DB->get_records_sql('SELECT id FROM {book_chapters} WHERE bookid = ?', array($book->id));
+//get all chapter ids
+$chapterids = $DB->get_records_sql('SELECT id FROM {book_chapters} WHERE bookid = ?', array($book->id));
 
-    foreach ($chapterids as $chapter) {
+$cnt_new = 0; //counter if there are no entries in database
+$cnt_exists = 0; //counter if there are entries in database
+
+//check if every chapter exists in booktool_validator table
+
+foreach ($chapterids as $chapter) {
+
+    if ( !($DB->record_exists('booktool_validator', array('bookid'=>$book->id, 'chapterid'=>$chapter->id))) ) {
 
         $record = new stdClass();
 
         $record->bookid = $book->id;
         $record->chapterid = $chapter->id;
 
-        if (!chapter_checkvalidation($book, $chapter)) {
+        if (chapter_checkvalidation($book->id, $chapter->id) == 0) {
+
+            $params = $PAGE->url->params();
 
             $record->validated = 0;
-            $record->faults = cnt_faults($book, $chapter);
+            $record->faults = cnt_faults($book->id, $chapter->id);
             $DB->insert_record('booktool_validator', $record, false);
 
-            $link = new action_link();
-            $link->url = new moodle_url('/mod/book/tool/validator/bcindex.php', 
-            array('id' => $book->id, 'chapterid' => $chapter->id));
-            $link->text = get_string('val_chapter', 'booktool_validator'); // Required
-            echo $OUTPUT->link($link);
+            $title = $DB->get_field('book_chapters', 'title', array('id' => $chapter->id, 'bookid' => $book->id));
+            
+            echo "<hr />";
+
+            echo "<h4>" . $title . "</h4>\t" . get_string('event_chapter_notvalidated', 'booktool_validator') . "<br>";
+            echo get_string('nof', 'booktool_validator') . $DB->get_field('booktool_validator', 'faults', array('bookid'=>$book->id, 'chapterid'=>$chapter->id)) . "<br>";
+
+            print_images($book->id, $chapter->id);
+            echo "<br>";
+            print_tables($book->id, $chapter->id);
+
+            $url = new moodle_url('/mod/book/tool/validator/bcindex.php', array('cmid'=>$params['id'], 'chapterid'=>$chapter->id));
+            $str = get_string('validate', 'booktool_validator');
+            $actionlink = new action_link($url, $str, null);
+
+            echo get_string('click', 'booktool_validator') . "<strong>" . $OUTPUT->render($actionlink) . "</strong><br>";
+
+            echo "<hr />";
 
         } else {
 
@@ -81,11 +101,44 @@ if ( !($DB->record_exists('booktool_validator', array('bookid'=>$book->id))) ) {
             $record->faults = 0;
             $DB->insert_record('booktool_validator', $record, false);
 
+            $cnt_new++;
+
         }
 
-                
-    }
+    } elseif (($DB->get_field('booktool_validator', 'validated', array('bookid' => $book->id, 'chapterid' => $chapter->id), IGNORE_MISSING)) == 0) {
 
+        $params = $PAGE->url->params();
+
+        $title = $DB->get_field('book_chapters', 'title', array('id' => $chapter->id, 'bookid' => $book->id));
+            
+        echo "<hr />";
+
+        echo "<h4>" . $title . "</h4>\t" . get_string('event_chapter_notvalidated', 'booktool_validator');
+        echo get_string('nof', 'booktool_validator') . $DB->get_field('booktool_validator', 'faults', array('bookid'=>$book->id, 'chapterid'=>$chapter->id));
+
+        echo "<br>";
+
+        print_images($book->id, $chapter->id);
+        echo "<br>";
+        print_tables($book->id, $chapter->id);
+
+        $url = new moodle_url('/mod/book/tool/validator/bcindex.php', array('cmid'=>$params['id'], 'chapterid'=>$chapter->id));
+        $str = get_string('validate', 'booktool_validator');
+        $actionlink = new action_link($url, $str, null);
+
+        echo get_string('click', 'booktool_validator') . "<strong>" . $OUTPUT->render($actionlink) . "</strong><br>";
+
+
+    } elseif (($DB->get_field('booktool_validator', 'validated', array('bookid' => $book->id, 'chapterid' => $chapter->id), IGNORE_MISSING)) == 1) {
+        
+        $cnt_exists++;
+    }
+    
 } 
+
+if ($cnt_exists == count($chapterids) || $cnt_new == count($chapterids)) {
+    
+    echo get_string('event_book_validated', 'booktool_validator');
+}
 
 echo $OUTPUT->footer();

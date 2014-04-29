@@ -29,142 +29,52 @@ require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->dirroot.'/mod/book/edit_form.php');
 
 /**
- * Returns pregmatch_all result for given search criteria
- *
- * @param 
- * @param array $chapters
- * @return 
- */
-function get_pregmatch($query_result, $pattern) {
-
- 	$serialize_query_result = serialize($query_result);
- 	preg_match_all($pattern, $serialize_query_result, $pregmatch_result);
-
- 	return $pregmatch_result;
-}
-/**
- * Counts how many indices are in the given array
+ * Returns integer value 1 (true) if given chapter of book has
+ * no validation faults or 0 (false) if there are validations faults
  * 
- * @param array $pregmatch_result
- * @return int
- */
-function count_indices($pregmatch_result) {
-
-	if (empty($pregmatch_result)) {
-		return false;
-	}
-
-	return count($pregmatch_result);
-}
-/**
- * Returns array which contains all occurences of given string
- *
- * @param 
- * @param string $search_term
- * @return 
- */
-function term_search($pregmatch_result, $search_term) {
-
-	if (empty($pregmatch_result) && empty($search_term)) {
-		return false;
-	}
-
-	return array_search($search_term, $pregmatch_result);
-}
-/**
- * Validate entire book.
- *
- * Checks whole book for image and table validation issues. Sets database field if book is validated.
- *
- * @param  stdClass $book
- * @return bool value whether book content is validated or not
- */
-function book_checkvalidation($book) {
- 	
- 	global $DB;
-
-	//connect to database and get all chapters for this book
-	$query = 'SELECT bc.content FROM
-		{book_chapters} bc 
-		JOIN {book} b ON bc.bookid = b.id
-		WHERE bc.bookid = ?';
-	$query_result = $DB->get_records_sql($query, array($book->id));
-
-	//set regular expressions for search and run the search
-
-	$image_pattern = '/<img(.*)\/>/'; //regular expression for image tag search
-	
-	$image_pregmatch = get_pregmatch($query_result, $image_pattern);
-	$image_pregmatch_cnt = count_indices($image_pregmatch);
-	$image_pregmatch_search = term_search($image_pregmatch, 'alt="');
-	$cnt_alt = count_indices($image_pregmatch_search);
-
-	
-	$table_pattern = '/<table(.*)\>/'; //regular expression for table tag search
-
-	$table_pregmatch = get_pregmatch($query_result, $table_pattern);
-	$table_pregmatch_cnt = count_indices($table_pregmatch);
-	$table_pregmatch_search = term_search($table_pregmatch, 'summary="');
-	$cnt_summary = count_indices($table_pregmatch_search);
-
-	if (($image_pregmatch_cnt > $cnt_alt) && ($table_pregmatch_cnt > $cnt_summary)) {
-		return false;
-	} elseif (($image_pregmatch_cnt == $cnt_alt) && ($table_pregmatch_cnt == $cnt_summary)) {
-		return true;
-	}
-
- }
-/**
- * Validate chapter of a book.
- *
- * Checks chapter of a book for image and table validation issues. Sets database field if book is validated.
- *
- * @param  	stdClass $book
+ * @param  	stdClass $book->id
  * @param 	$chapterid
- * @return 	bool value whether book content is validated or not
+ * @return 	int
  */
-function chapter_checkvalidation($book, $chapterid) {
+function chapter_checkvalidation($bookid, $chapterid) {
 
  	global $DB;
 
- 	$query = 'SELECT bc.content FROM 
- 		{book_chapters} bc
- 		JOIN {book} b ON bc.bookid = b.id
- 		WHERE bc.id = ? AND bc.bookid = ?';
- 	$params = array($chapterid, $book->id);
- 	$query_result = $DB->get_records_sql($query, $params);
+ 	$query = $DB->get_field('book_chapters', 'content', array('id'=>$chapterid, 'bookid'=>$bookid));
 
-	//set regular expressions for search and run the search
-
-	$image_pattern = '/<img(.*)\/>/'; //regular expression for image tag search
+ 	$content = serialize($query);
 	
-	$image_pregmatch = get_pregmatch($query_result, $image_pattern);
-	$image_pregmatch_cnt = count_indices($image_pregmatch);
-	$image_pregmatch_search = term_search($image_pregmatch, 'alt="');
-	$cnt_alt = count_indices($image_pregmatch_search);
+	//setp alt regular expression and run
 
-	
-	$table_pattern = '/<table(.*)\/>/'; //regular expression for table tag search
+	$alt_pat = '/<img(\s*(?!alt)([\w\-])+=([\"])[^\"]+\3)*\s*\/?>/i'; //counts ones that don't have alt tag
 
-	$table_pregmatch = get_pregmatch($query_result, $table_pattern);
-	$table_pregmatch_cnt = count_indices($table_pregmatch);
-	$table_pregmatch_search = term_search($table_pregmatch, 'summary="');
-	$cnt_summary = count_indices($table_pregmatch_search);
+	preg_match_all($alt_pat, $content, $img_pregmatch);
 
-	if (($image_pregmatch_cnt == $cnt_alt) && ($table_pregmatch_cnt == $cnt_summary)) {
-		return true;
+	$image_pregmatch_cnt = count($img_pregmatch[0]);
+
+	//set regular expressions for table and run
+
+	$summ_pat = '/<table(\s*(?!summary)([\w\-])+=([\"])[^\"]+\3)*\s*\/?>/i'; //counts ones that don't have summary tag
+
+	preg_match_all($summ_pat, $content, $table_pregmatch);
+
+	$table_pregmatch_cnt = count($table_pregmatch[0]);
+
+	if ($image_pregmatch_cnt == 0 && $table_pregmatch_cnt == 0) {
+		return 1; //true, there are no validation faults
 	} else {
-		return false;
+		return 0; //false, there are validation faults
 	}
+
 }
 /**
  * Get chapter name.
  *
  * Finds and returns chapter name for given parameters.
  *
- * @param  	stdClass $book
+ * @param  	$book->id
  * @param 	$chapterid
- * @return 	chapter name value
+ * @return 	array
  */
 function chapter_getname($book, $chapterid) {
 
@@ -180,7 +90,7 @@ function chapter_getname($book, $chapterid) {
 	return $query_result->title;
 }
 
-function number_od_faults($book, $chapterid) {
+function number_od_faults($bookid, $chapterid) {
 
 	global $DB;
 
@@ -194,36 +104,93 @@ function number_od_faults($book, $chapterid) {
  	return $query_result;
 }
 
-function cnt_faults($book, $chapterid) {
+/**
+ * Counts number of images that lack alt attribute and number of tables that lack
+ * summarry attribute. Returns number of faults.
+ *
+ * @param  	stdClass $book->id
+ * @param 	$chapterid
+ * @return 	int
+ */
+function cnt_faults($bookid, $chapterid) {
 
 	global $DB;
 
-	// $book_id = $book->id;
-	// $chapter_id = $chapterid->id;
+ 	$query = $DB->get_field('book_chapters', 'content', array('id'=>$chapterid, 'bookid'=>$bookid));
 
-	$query = 'SELECT bc.content FROM 
- 			{book_chapters} bc 
- 			JOIN {book} b ON bc.bookid = b.id
- 			WHERE b.id = ? AND bc.id = ?';
- 	$params = array($book->id, $chapterid->id);
- 	$query_result = $DB->get_records_sql($query, $params);
+ 	$content = serialize($query);
 
+	//set regular expressions for image and run
 
-	$image_pattern = '/<img(.*)\/>/'; //regular expression for image tag search
-	
-	$image_pregmatch = get_pregmatch($query_result, $image_pattern);
-	$image_pregmatch_cnt = count_indices($image_pregmatch);
-	$image_pregmatch_search = term_search($image_pregmatch, 'alt="');
-	$cnt_alt = count_indices($image_pregmatch_search);
+	$alt_pat = '/<img(\s*(?!alt)([\w\-])+=([\"])[^\"]+\3)*\s*\/?>/i';;
 
-	
-	$table_pattern = '/<table(.*)\>/'; //regular expression for table tag search
+	preg_match_all($alt_pat, $content, $img_alt_pregmatch);
 
-	$table_pregmatch = get_pregmatch($query_result, $table_pattern);
-	$table_pregmatch_cnt = count_indices($table_pregmatch);
-	$table_pregmatch_search = term_search($table_pregmatch, 'summary="');
-	$cnt_summary = count_indices($table_pregmatch_search);
+	//set regular expressions for table and run
 
+	$summ_pat = '/<table(\s*(?!summary)([\w\-])+=([\"])[^\"]+\3)*\s*\/?>/i';
 
-	return ($image_pregmatch_cnt - $cnt_alt) + ( $table_pregmatch_cnt - $cnt_summary );
+	preg_match_all($summ_pat, $content, $table_summ_pregmatch);
+
+	$nof = (count($img_alt_pregmatch[0]) + count($table_summ_pregmatch[0]));
+
+	return $nof;
+}
+
+/**
+ * Finds and prints images that lack alt attribute for given arguments
+ *
+ * @param  	stdClass $book->id
+ * @param 	$chapterid
+ * @return 	
+ */
+function print_images($bookid, $chapterid) {
+
+	global $DB;
+
+	$query = $DB->get_field('book_chapters', 'content', array('id'=>$chapterid, 'bookid'=>$bookid));
+	$content = serialize($query);
+
+	$alt_pat = '/<img(\s*(?!alt)([\w\-])+=([\"])[^\"]+\3)*\s*\/?>/i';;
+	preg_match_all($alt_pat, $content, $img_alt_pregmatch);
+
+	if (count($img_alt_pregmatch[0]) != 0) {
+		
+		echo get_string('image','booktool_validator');
+		echo "<br> <br>";
+
+		foreach($img_alt_pregmatch[0] as $print) {
+   		echo $print . "<br>";
+		}
+	}		
+}
+
+/**
+ * Echo tables that lack summary attribute
+ *
+ * Finds and prints tables that lack summary attribute for given arguments
+ *
+ * @param  	stdClass $book->id
+ * @param 	$chapterid
+ * @return 	
+ */
+function print_tables($bookid, $chapterid) {
+
+	global $DB;
+
+	$query = $DB->get_field('book_chapters', 'content', array('id'=>$chapterid, 'bookid'=>$bookid));
+	//$content = serialize($query);
+
+	$table_pattern = '/<table(.*?)>.*?<\/table>/s'; //regular expression for table tag search
+
+	preg_match_all($table_pattern, $query, $table_pregmatch);
+
+	foreach($table_pregmatch[0] as $child) {
+
+   		if(strpos($child, "<table ") !== FALSE && strpos($child, "summary=") == FALSE) {
+   			echo get_string('table', 'booktool_validator');
+   			echo "<br> <br>";
+   			echo $child . "<br>";
+   		}
+	}
 }

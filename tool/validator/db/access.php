@@ -26,12 +26,13 @@ defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
 	'booktool/validator:validate' => array(
-		'captype' => 'write',
-		'contextlevel' => CONTEXT_MODULE,
-		'archetypes' => array(
-			'teacher' => CAP_ALLOW,
-			'editingteacher' => CAP_ALLOW,
-			'manager' => CAP_ALLOW,
+		'riskbitmask' => RISK_XSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
 		)
 	),
 );

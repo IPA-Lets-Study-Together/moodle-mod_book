@@ -34,22 +34,24 @@ defined('MOODLE_INTERNAL') || die;
  	global $PAGE, $DB;
 
  	$params = $PAGE->url->params();
- 	if (empty($params['id']) or empty($params['chapterid'])) {
+ 	if (empty($params['id'])) {
  		return;
  	}
 
- /*	$query = 'SELECT btv.validated 
- 		FROM {booktool_validator} btv
- 		JOIN {book_chapters} bc ON btv.chapterid = bc.id
- 		JOIN {book} b ON bc.bookid = b.id
- 		WHERE b.id = ? AND bc.id';
+ 	$cm = get_coursemodule_from_id('book', $params['id'], 0, false, MUST_EXIST);
+	$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+	$book = $DB->get_record('book', array('id'=>$cm->instance), '*', MUST_EXIST);
 
- 	$query_result = $DB->get_record($query, array($params['id'], $params['chapterid']));*/
+	if (empty($params['chapterid']) || $params['chapterid'] == 0) {
+		$chapters = $DB->get_records_menu('book_chapters', array('bookid'=>$book->id), 'id', 'id, bookid');
 
- 	$validated = $DB->get_field('booktool_validator', 'validated', array('bookid'=>$params['id'], 'chapterid'=>$params['chapterid']), IGNORE_MISSING);
+		reset($chapters);
+		$params['chapterid'] = key($chapters);
+	}
 
 	if (has_capability('booktool/validator:validate', $PAGE->cm->context)) {
- 		if ($validated == 1) {
+ 		if ( $DB->record_exists('booktool_validator', array('bookid'=>$book->id, 'chapterid'=>$params['chapterid']))
+ 			&& ($DB->get_field('booktool_validator', 'validated', array('bookid'=>$book->id, 'chapterid'=>$params['chapterid']), IGNORE_MISSING)) == 1) {
 
  			$node->add(get_string('validatebook', 'booktool_validator'), null, navigation_node::TYPE_SETTING, null, null, 
 	 			new pix_icon('validator_gray', '', 'booktool_validator', array('class'=>'icon')));
@@ -59,7 +61,7 @@ defined('MOODLE_INTERNAL') || die;
  		} else {
 
  			$url1 = new moodle_url('/mod/book/tool/validator/bindex.php', array('id'=>$params['id']));
-	 		$url2 = new moodle_url('/mod/book/tool/validator/bcindex.php', array('id'=>$params['id'], 'chapterid'=>$params['chapterid']));
+	 		$url2 = new moodle_url('/mod/book/tool/validator/bcindex.php', array('cmid'=>$params['id'], 'chapterid'=>$params['chapterid']));
 	 		//$action = new action_link($url1, get_string('verifybook', 'booktool_validator'), new popup_action('click', $url1));
 	 		$node->add(get_string('validatebook', 'booktool_validator'), $url1, navigation_node::TYPE_SETTING, null, null, 
 	 			new pix_icon('validator', '', 'booktool_validator', array('class'=>'icon')));

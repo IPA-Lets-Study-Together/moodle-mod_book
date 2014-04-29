@@ -28,7 +28,7 @@ use core\plugininfo\base;
 defined('MOODLE_INTERNAL') || die();
 
 
-class bookverification extends base {
+class bookvalidation extends base {
     public function is_uninstall_allowed() {
         return true;
     }
