@@ -86,3 +86,7 @@ $string['subplugintype_booktool_plural'] = 'Book tools';
 /* Validation subplugin */
 $string['subplugintype_bookvalidation'] = 'Book validation';
 $string['subplugintype_bookvalidation_plural'] = 'Book validations';
+
+/* Download subplugin */
+$string['subplugintype_bookdownload'] = 'Book download';
+$string['subplugintype_bookdownload_plural'] = 'Book downloads';

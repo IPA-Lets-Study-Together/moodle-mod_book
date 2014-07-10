@@ -36,9 +36,17 @@ $string['validator:validated'] = 'provjeri';
 $string['buttonvalidate'] = 'Provjeri';
 $string['chapter'] = 'Poglavlje';
 $string['val_chapter'] = 'Provjera poglavlja';
-$string['table'] ='Nedostaje summary u tablicama:';
-$string['image'] = 'Sljedeće slike nemaju opis:';
+$string['table'] ='Nedostaje summary atribut!';
+$string['image'] = 'Slika nema opis!';
 $string['nof'] = 'Broj pogrešaka: ';
 
 $string['validate'] = 'Provjeri';
 $string['click'] = 'Klikni ';
+
+$string['check_img'] = 'Provjeri slike';
+$string['check_table'] = 'Provjeri tablice';
+
+$string['no_images'] = 'Nema slika u ovom poglavlju.';
+$string['no_tables'] = 'Nema tablica u ovom poglavlju.';
+
+$string['words'] = 'Broj riječi';

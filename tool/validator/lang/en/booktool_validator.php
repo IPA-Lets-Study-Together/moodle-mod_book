@@ -36,9 +36,17 @@ $string['validator:validated'] = 'validate';
 $string['buttonvalidate'] = 'Validate';
 $string['chapter'] = 'Chapter';
 $string['val_chapter'] = 'Validate chapter';
-$string['table'] ='Missing summary in tables:';
-$string['image'] = 'Missing image description in images:';
+$string['table'] ='Missing summary!';
+$string['image'] = 'Missing image description!';
 $string['nof'] = 'Number of faults: ';
 
 $string['validate'] = 'Validate';
 $string['click'] = 'Click to ';
+
+$string['check_img'] = 'Check images';
+$string['check_table'] = 'Check tables';
+
+$string['no_images'] = 'There are no images in this chapter.';
+$string['no_tables'] = 'There are no tables in this chapter.';
+
+$string['words'] = 'Word count';

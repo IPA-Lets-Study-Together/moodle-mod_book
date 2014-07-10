@@ -26,6 +26,7 @@ require(dirname(__FILE__).'/../../../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/validation_form.php');
 require_once($CFG->dirroot.'/mod/book/locallib.php');
+require_once($CFG->libdir.'/chromephp/ChromePhp.php');
 
 $cmid           = required_param('cmid', PARAM_INT);            // Course Module ID
 $chapterid      = optional_param('chapterid', 0, PARAM_INT);    // Chapter ID
@@ -47,23 +48,6 @@ require_capability('booktool/validator:validate', $context);*/
 //set data
 $PAGE->set_url('/mod/book/tool/validator/bcindex.html', array('cmid'=>$cmid, 'chapterid'=>$chapterid));
 $PAGE->set_pagelayout('admin'); // TODO: Something. This is a bloody hack!
-
-if ($chapterid) {
-    $chapter = $DB->get_record('book_chapters', array('id'=>$chapterid, 'bookid'=>$book->id), '*', MUST_EXIST);
-}
-$chapter->cmid = $cm->id;
-
-//get options data
-$pagenum_query = 'SELECT pagenum FROM {book_chapters} WHERE id = ?';
-$pagenum_params = array($chapterid);
-$pagenum = $DB->get_records_sql($pagenum_query, $pagenum_params);
-
-$subchapter_query = 'SELECT subchapter FROM {book_chapters} WHERE id = ?';
-$subchapter_params = array($chapterid);
-$subchapter = $DB->get_records_sql($subchapter_query, $subchapter_params);
-
-$options = array('noclean'=>true, 'subdirs'=>true, 'maxfiles'=>-1, 'maxbytes'=>0, 'context'=>$context);
-$chapter = file_prepare_standard_editor($chapter, 'content', $options, $context, 'mod_book', 'chapter', $chapterid);
 
 //check if data exists in the sub-plugin table, create new data if doesn't exist
 
@@ -89,11 +73,20 @@ if ( !$DB->record_exists('booktool_validator', array('bookid'=>$book->id, 'chapt
 
 } 
 
+$chapter = new stdClass();
+
+if ($chapterid) {
+    $chapter = $DB->get_record('book_chapters', array('id'=>$chapterid, 'bookid'=>$book->id), '*', MUST_EXIST);
+}
+
+$chapter->cmid = $cm->id;
+
+$options = array('noclean'=>true, 'subdirs'=>true, 'maxfiles'=>-1, 'maxbytes'=>0, 'context'=>$context);
+$chapter = file_prepare_standard_editor($chapter, 'content', $options, $context, 'mod_book', 'chapter', $chapterid);
+
 $mform = new book_chapter_edit_form(null, array('chapter'=>$chapter, 'options'=>$options));
 
 //If data submitted, process and store
-
-//$DB->set_debug(true);
 
 if ($mform->is_cancelled()) {
     if (empty($chapterid)) {
@@ -103,6 +96,8 @@ if ($mform->is_cancelled()) {
     }
 
 } else if ($data = $mform->get_data()) {
+
+    //var_dump($data);
         
     //store the files
     $data->timemodified = time();
@@ -111,7 +106,6 @@ if ($mform->is_cancelled()) {
     $DB->set_field('book', 'revision', $book->revision+1, array('id'=>$book->id));
 
     //check again
-
     if ((chapter_checkvalidation($book->id, $data->id) == 1) 
         && ($DB->get_field('booktool_validator', 'validated', array('bookid'=>$book->id, 'chapterid'=>$data->id), MUST_EXIST) == 0)) {
 

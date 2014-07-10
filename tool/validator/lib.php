@@ -69,6 +69,14 @@ defined('MOODLE_INTERNAL') || die;
 	 		$node->add(get_string('validatechapter', 'booktool_validator'), $url2, navigation_node::TYPE_SETTING, null, null, 
 	 			new pix_icon('validator', '', 'booktool_validator', array('class'=>'icon')));
  		}
+
+ 		$url_img = new moodle_url('/mod/book/tool/validator/images.php', array('id'=>$params['id']));
+ 		$node->add(get_string('check_img', 'booktool_validator'), $url_img, navigation_node::TYPE_SETTING, null, null, 
+ 			new pix_icon('image', '', 'booktool_validator', array('class'=>'icon')));
+ 		
+ 		$url_table = new moodle_url('/mod/book/tool/validator/tables.php', array('id'=>$params['id']));
+ 		$node->add(get_string('check_table', 'booktool_validator'), $url_table, navigation_node::TYPE_SETTING, null, null, 
+ 			new pix_icon('table', '', 'booktool_validator', array('class'=>'icon')));
 	}
  		
 }

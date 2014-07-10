@@ -24,10 +24,8 @@
 
 require(dirname(__FILE__).'/../../../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
-require_once(dirname(__FILE__).'/validation_form.php');
 
-$id        = required_param('id', PARAM_INT);           // Course Module ID
-$chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID
+$id = required_param('id', PARAM_INT);  // Course Module ID
 
 $cm = get_coursemodule_from_id('book', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
@@ -39,49 +37,31 @@ $context = context_module::instance($cm->id);
 require_capability('mod/book:read', $context);
 require_capability('booktool/validator:validate', $context);
 
-$PAGE->set_url('/mod/book/tool/validator/index.html', array('id'=>$id, 'chapterid'=>$chapterid));
+$PAGE->set_url('/mod/book/tool/validator/bindex.html', array('id'=>$id));
 
-if ($chapterid) {
-    if (!$chapter = $DB->get_record('book_chapters', array('id'=>$chapterid, 'bookid'=>$book->id))) {
-        $chapterid = 0;
-    }
-} else {
-    $chapter = false;
-}
+//check if data exists in the sub-plugin table, create new data if doesn't exist
+
+//Fill and print the form
+$pagetitle = $book->name . ": " . 
 
 $PAGE->set_title($book->name);
 $PAGE->set_heading($course->fullname);
 
-
-$mform = new booktool_validator_form(null, array('id'=>$id, 'chapterid'=>$chapterid));
-
-if ($mform->is_cancelled()) {
-    if (empty($chapter->id)) {
-        redirect($CFG->wwwroot.'/mod/book/view.php?id=$cm->id');
-    } else {
-        redirect($CFG->wwwroot."/mod/book/view.php?id=$cm->id&chapterid=$chapter->id");
-    }
-} else if ($data = $mform->get_data()) {
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading($book->name);
-    echo $OUTPUT->heading(get_string('validatebook', 'booktool_validator'), 3);
-
-    $is_validated = book_checkvalidation($book);
-
-    if (!$is_validated) {
-        
-    } else {
-        echo get_string('event_chapter_validated', 'booktool_validator');
-    }
-
-    echo $OUTPUT->continue_button(new moodle_url('/mod/book/view.php', array('id'=>$id)));
-    echo $OUTPUT->footer();
-    die;
-}
-
 echo $OUTPUT->header();
 echo $OUTPUT->heading($book->name);
 
-$mform->display();
+//get all chapter ids
+$chapterids = $DB->get_records_sql('SELECT id FROM {book_chapters} WHERE bookid = ?', array($book->id));
+
+//check if every chapter exists in booktool_validator table
+foreach ($chapterids as $chapter) {
+
+    $title = $DB->get_field('book_chapters', 'title', array('id' => $chapter->id, 'bookid' => $book->id));
+            
+    echo "<hr />";
+    echo "<h4>" . $title . "</h4><br>";
+
+    find_images($book->id, $chapter->id);
+}
 
 echo $OUTPUT->footer();

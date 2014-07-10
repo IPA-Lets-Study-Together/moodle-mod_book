@@ -194,3 +194,83 @@ function print_tables($bookid, $chapterid) {
    		}
 	}
 }
+
+/**
+ * Finds and prints all images and their alt attribute
+ *
+ * @param  	stdClass $book->id
+ * @param 	$chapterid
+ * @return 	
+ */
+function find_images($bookid, $chapterid) {
+	global $DB;
+
+	$query = $DB->get_field('book_chapters', 'content', array('id'=>$chapterid, 'bookid'=>$bookid));
+	$content = serialize($query);
+
+	$img_pat = '/<img([\w\W]+?)>/i'; //regular expression for image tag search
+	preg_match_all($img_pat, $query, $img_pregmatch);
+
+	if (!empty($img_pregmatch[0])) {
+
+		foreach($img_pregmatch[0] as $image) {
+
+			echo $image . "<br>"; //echoes image
+
+			$alt_pat = '/(alt\=\"([a-zA-Z0-9\d\D ]*)\")/';
+			preg_match_all($alt_pat, $image, $alt_pregmatch);
+
+			if (empty($alt_pregmatch[0])) {
+				echo '<b>' . get_string('image', 'booktool_validator') . '</b>';
+			}
+
+			foreach ($alt_pregmatch[2] as $alt) {
+
+				echo $alt; //echoes alt
+				echo '<br>' . '<b>' . get_string('words','booktool_validator') . ': </b>' . str_word_count($alt) .'<br>';
+		
+			}
+		}		
+	} else {
+		echo get_string('no_images','booktool_validator');
+	}
+}
+
+/**
+ * Finds and prints all tables and their summary attribute
+ *
+ * @param  	stdClass $book->id
+ * @param 	$chapterid
+ * @return 	
+ */
+function find_tables($bookid, $chapterid) {
+	global $DB;
+
+	$query = $DB->get_field('book_chapters', 'content', array('id'=>$chapterid, 'bookid'=>$bookid));
+	//$content = serialize($query);
+
+	$table_pat = '/<table(.*?)>.*?<\/table>/s'; //regular expression for table tag search
+	preg_match_all($table_pat, $query, $table_pregmatch);
+
+	if (!empty($table_pregmatch[0])) {
+
+		foreach($table_pregmatch[0] as $table) {
+
+			echo $table . "<br>"; //echoes table
+
+			$summ_pat = '/(summary\=\"([a-zA-Z0-9\d\D ]*)\") /i';
+			preg_match_all($summ_pat, $table, $summ_pregmatch);
+
+			if (empty($summ_pregmatch[0])) {
+				echo '<b>' . get_string('table', 'booktool_validator') . '</b>';
+			}
+
+			foreach ($summ_pregmatch[2] as $summary) {
+				echo $summary; //echoes summary
+				echo '<br>' . '<b>' . get_string('words','booktool_validator') . ': </b>' . str_word_count($summary) .'<br>'; 
+			}
+		}		
+	} else {
+		echo get_string('no_tables','booktool_validator');
+	}
+}
